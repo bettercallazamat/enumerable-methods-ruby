@@ -77,20 +77,16 @@ module Enumerable
     result
   end
 
-  def my_count(arg=false)
+  def my_count(arg = nil)
+    obj = self
     counter = 0
-    if arg == false
-      self.my_each do |i|
-        counter += 1
-      end
-    elsif arg == true
-      self.my_each {|i| counter += 1 if self[i] == arg}
-    elsif block_given?
-      if yield(self[i])
-        counter += 1
-      end
+    if block_given?
+      obj.length.times { |i| counter += 1 if yield(obj[i]) }
+    elsif arg.nil?
+      counter = obj.length
+    elsif !arg.nil?
+      obj.length.times { |i| counter += 1 if obj[i] == arg }
     end
     counter
   end
-
 end
