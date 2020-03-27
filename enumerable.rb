@@ -1,84 +1,70 @@
 module Enumerable
   def my_each
-    self.length.times do |i| 
-      if block_given?
-        yield(self[i])
-      else
-        break
-      end
+    obj = self
+    obj.length.times do |i|
+      yield(obj[i]) if block_given?
+      break unless block_given?
     end
   end
 
-  def my_each_with_index(start=0)
-    if start == 0
-      i = 0
-    else
-      i = 0 + start
-    end
-    while i < self.length
-      if block_given?
-        yield(self[i], i)
-      else
-        break
-      end
+  def my_each_with_index(start = 0)
+    obj = self
+    i = start
+    i = 0 if start.zero?
+    while i < obj.length
+      yield(obj[i], i) if block_given?
+      break unless block_given?
+
       i += 1
     end
   end
 
   def my_select
+    obj = self
     array = []
-    self.length.times do |i| 
-      if block_given?
-        if yield(self[i])
-          array.push(self[i])
-        end
-      else
-        return nil
-      end
+    obj.length.times do |i|
+      array.push(obj[i]) if block_given? && yield(obj[i])
+      return nil unless block_given?
     end
     array
   end
 
   def my_all?(arg = false)
+    obj = self
     result = true
     if block_given?
-      self.length.times do |i|
-        if !yield(self[i])
+      obj.length.times do |i|
+        if !yield(obj[i])
           result = false
         end
       end
     elsif arg.is_a?(Regexp)
-      self.length.times do |i|
-        if !self[i].match arg
+      obj.length.times do |i|
+        if !obj[i].match arg
           result = false
         end
       end
     elsif arg == Numeric || arg == String
-      self.length.times do |i|
-        if !self[i].is_a?(arg)
+      obj.length.times do |i|
+        if !obj[i].is_a?(arg)
           result = false
         end
       end
     elsif arg.is_a?(Numeric) || arg.is_a?(String)
-      self.length.times do |i|
-        if self[i] != arg
+      obj.length.times do |i|
+        if obj[i] != arg
           result = false
         end
       end
     elsif arg == false
-      self.length.times do |i|
-        if !self[i]
+      obj.length.times do |i|
+        if !obj[i]
           result = false
         end
       end
     end
     result
   end
-
-
-
-
-
 
   def my_any?
     result = false
@@ -106,6 +92,5 @@ module Enumerable
     end
     counter
   end
-
 
 end
