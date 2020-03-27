@@ -29,6 +29,43 @@ module Enumerable
     array
   end
 
+  # def my_all?(arg = false)
+  #   obj = self
+  #   result = true
+  #   if block_given?
+  #     obj.length.times do |i|
+  #       if !yield(obj[i])
+  #         result = false
+  #       end
+  #     end
+  #   elsif arg.is_a?(Regexp)
+  #     obj.length.times do |i|
+  #       if !obj[i].match arg
+  #         result = false
+  #       end
+  #     end
+  #   elsif arg == Numeric || arg == String
+  #     obj.length.times do |i|
+  #       if !obj[i].is_a?(arg)
+  #         result = false
+  #       end
+  #     end
+  #   elsif arg.is_a?(Numeric) || arg.is_a?(String)
+  #     obj.length.times do |i|
+  #       if obj[i] != arg
+  #         result = false
+  #       end
+  #     end
+  #   elsif arg == false
+  #     obj.length.times do |i|
+  #       if !obj[i]
+  #         result = false
+  #       end
+  #     end
+  #   end
+  #   result
+  # end
+
   def my_all?(arg = false)
     obj = self
     result = true
@@ -92,28 +129,32 @@ module Enumerable
 
   def my_map(proc = nil)
     obj = self
+    obj = obj.to_a unless obj.is_a?(Array)
     array = []
-    if proc.nil? && obj.is_a?(Array)
+    if proc.nil?
       obj.length.times { |i| array.push(yield(obj[i])) }
-    elsif proc.nil? && obj.is_a?(Range)
-      obj = obj.to_a
-      obj.length.times { |i| array.push(yield(obj[i])) }
-    elsif !proc.nil?
+    elsif !proc.nil? || (!proc.nil? && block_given)
       obj.length.times { |i| array.push(proc.call(obj[i])) }
     end
     array
   end
 
-  def my_inject(initial = 0, task = nil)
+  def my_inject(arg1 = nil, arg2 = nil)
     obj = self
-    initial, task = task, initial unless initial.is_a?(Numeric) || task.is_a?(Symbol)
-    result = initial
+    obj = obj.to_a unless obj.is_a?(Array)
+    result = 0
+    result = arg1 if arg1.is_a?(Numeric)
     if block_given?
-      obj = obj.to_a unless obj.is_a?(Array)
       obj.length.times { |i| result = yield(result, obj[i]) }
-    else 
-      # obj.length.times { |i| initial task obj[i] }
+    elsif arg1.is_a?(Symbol)
+      obj.length.times { |i| result = result.send(arg1, obj[i]) }
+    else
+      obj.length.times { |i| result = result.send(arg2, obj[i]) }
     end
     result
+  end
+
+  def multiply_els(array)
+    array.my_inject { |a, b| a * b }
   end
 end
