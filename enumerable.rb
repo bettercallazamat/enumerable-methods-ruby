@@ -90,19 +90,30 @@ module Enumerable
     counter
   end
 
-  def my_map(arg = nil)
+  def my_map(proc = nil)
     obj = self
     array = []
-    case obj
-    when Array
+    if proc.nil? && obj.is_a?(Array)
       obj.length.times { |i| array.push(yield(obj[i])) }
-    when Range
+    elsif proc.nil? && obj.is_a?(Range)
       obj = obj.to_a
-      obj.length.times { |i| array.push(yield(obj[i]))}
-    end
-    if !arg.nil?
-    
+      obj.length.times { |i| array.push(yield(obj[i])) }
+    elsif !proc.nil?
+      obj.length.times { |i| array.push(proc.call(obj[i])) }
     end
     array
+  end
+
+  def my_inject(initial = 0, task = nil)
+    obj = self
+    initial, task = task, initial unless initial.is_a?(Numeric) || task.is_a?(Symbol)
+    result = initial
+    if block_given?
+      obj = obj.to_a unless obj.is_a?(Array)
+      obj.length.times { |i| result = yield(result, obj[i]) }
+    else 
+      # obj.length.times { |i| initial task obj[i] }
+    end
+    result
   end
 end
