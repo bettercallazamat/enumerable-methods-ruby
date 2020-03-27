@@ -1,3 +1,6 @@
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
+
 module Enumerable
   def my_each
     obj = self
@@ -66,49 +69,28 @@ module Enumerable
   #   result
   # end
 
-  def my_all?(arg = false)
+  def my_all?(arg = nil)
     obj = self
     result = true
     if block_given?
-      obj.length.times do |i|
-        if !yield(obj[i])
-          result = false
-        end
-      end
+      obj.length.times { |i| result = false unless yield(obj[i]) }
     elsif arg.is_a?(Regexp)
-      obj.length.times do |i|
-        if !obj[i].match arg
-          result = false
-        end
-      end
-    elsif arg == Numeric || arg == String
-      obj.length.times do |i|
-        if !obj[i].is_a?(arg)
-          result = false
-        end
-      end
+      obj.length.times { |i| result = false unless obj[i].match arg }
+    elsif arg.is_a?(Class)
+      obj.length.times { |i| result = false unless obj[i].is_a?(arg) }
     elsif arg.is_a?(Numeric) || arg.is_a?(String)
-      obj.length.times do |i|
-        if obj[i] != arg
-          result = false
-        end
-      end
-    elsif arg == false
-      obj.length.times do |i|
-        if !obj[i]
-          result = false
-        end
-      end
+      obj.length.times { |i| result = false if obj[i] != arg }
+    else
+      obj.length.times { |i| result = false unless obj[i] }
     end
     result
   end
 
   def my_any?
+    obj = self
     result = false
-    self.my_each do |i|
-      if yield(self[i])
-        result = true
-      end
+    obj.my_each do |i|
+      result = true if yield(obj[i])
       break if result == true
     end
     result
