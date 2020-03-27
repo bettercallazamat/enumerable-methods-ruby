@@ -89,4 +89,20 @@ module Enumerable
     end
     counter
   end
+
+  def my_map(arg = nil)
+    obj = self
+    array = []
+    case obj
+    when Array
+      obj.length.times { |i| array.push(yield(obj[i])) }
+    when Range
+      obj = obj.to_a
+      obj.length.times { |i| array.push(yield(obj[i]))}
+    end
+    if !arg.nil?
+    
+    end
+    array
+  end
 end
