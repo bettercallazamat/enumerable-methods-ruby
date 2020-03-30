@@ -95,10 +95,12 @@ module Enumerable
     obj = self
     obj = obj.to_a unless obj.is_a?(Array)
     array = []
-    if proc.nil?
+    if proc.nil? && block_given?
       obj.length.times { |i| array.push(yield(obj[i])) }
     elsif !proc.nil? || (!proc.nil? && block_given)
       obj.length.times { |i| array.push(proc.call(obj[i])) }
+    else
+      return to_enum
     end
     array
   end
