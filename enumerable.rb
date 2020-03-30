@@ -110,7 +110,7 @@ module Enumerable
     obj = obj.to_a unless obj.is_a?(Array)
     result = 0
     result = arg1 if arg1.is_a?(Numeric)
-    result = "" if obj[0].is_a?(String)
+    result = '' if obj[0].is_a?(String)
     if block_given?
       obj.length.times { |i| result = yield(result, obj[i]) }
     elsif arg1.is_a?(Symbol)
