@@ -1,13 +1,12 @@
 # rubocop:disable Metrics/CyclomaticComplexity
 # rubocop:disable Metrics/PerceivedComplexity
+# rubocop:disable Metrics/ModuleLength
 
 module Enumerable
   def my_each
     obj = self
-    obj.length.times do |i|
-      yield(obj[i]) if block_given?
-      break unless block_given?
-    end
+    obj.length.times { |i| yield(obj[i]) if block_given? }
+    to_enum unless block_given?
   end
 
   def my_each_with_index(start = 0)
@@ -16,43 +15,25 @@ module Enumerable
     i = 0 if start.zero?
     while i < obj.length
       yield(obj[i], i) if block_given?
-      break unless block_given?
 
       i += 1
     end
+    to_enum unless block_given?
   end
 
   def my_select
     obj = self
     array = []
-    obj.length.times do |i|
-      array.push(obj[i]) if block_given? && yield(obj[i])
-      return nil unless block_given?
-    end
+    obj.length.times { |i| array.push(obj[i]) if block_given? && yield(obj[i]) }
+    return to_enum unless block_given?
+
     array
   end
-
-  # def my_all?(arg = nil)
-  #   obj = self
-  #   result = true
-  #   if block_given?
-  #     obj.length.times { |i| result = false unless yield(obj[i])}
-  #   elsif arg.is_a?(Regexp)
-  #     obj.length.times { |i| result = false unless obj[i].match arg }
-  #   elsif arg.is_a?(Class)
-  #     obj.length.times { |i| result = false unless obj[i].is_a?(arg) }
-  #   elsif arg.is_a?(Numeric) || arg.is_a?(String)
-  #     obj.length.times { |i| result = false if obj[i] != arg }
-  #   else
-  #     obj.length.times { |i| result = false unless obj[i] }
-  #   end
-  #   result
-  # end
 
   def my_all?(arg = nil)
     obj = self
     if block_given?
-      obj.length.times { |i| return false unless yield(obj[i])}
+      obj.length.times { |i| return false unless yield(obj[i]) }
     elsif arg.is_a?(Regexp)
       obj.length.times { |i| return false unless obj[i].match arg }
     elsif arg.is_a?(Class)
@@ -68,7 +49,7 @@ module Enumerable
   def my_any?(arg = nil)
     obj = self
     if block_given?
-      obj.length.times { |i| return true if yield(obj[i])}
+      obj.length.times { |i| return true if yield(obj[i]) }
     elsif arg.is_a?(Regexp)
       obj.length.times { |i| return true if obj[i].match arg }
     elsif arg.is_a?(Class)
@@ -84,7 +65,7 @@ module Enumerable
   def my_none?(arg = nil)
     obj = self
     if block_given?
-      obj.length.times { |i| return false if yield(obj[i])}
+      obj.length.times { |i| return false if yield(obj[i]) }
     elsif arg.is_a?(Regexp)
       obj.length.times { |i| return false if obj[i].match arg }
     elsif arg.is_a?(Class)
