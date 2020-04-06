@@ -121,9 +121,10 @@ module Enumerable
     result
   end
 
-  def multiply_els(array)
-    array.my_inject { |a, b| a * b }
-  end
+end
+
+def multiply_els(array)
+  array.my_inject(1, :*)
 end
 
 # rubocop:enable Metrics/CyclomaticComplexity
